@@ -22,7 +22,7 @@ export function useMe() {
       return {
         id: user.id,
         email: user.email ?? null,
-        fullName: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "",
+        fullName: profile?.full_name || (user.user_metadata?.["full_name"] as string) || user.email || "",
         isAdmin: !!roles?.some((r) => r.role === "admin"),
       };
     },

@@ -77,7 +77,7 @@ function ClassPage() {
     mutationFn: async (rows: { student_id: string; status: AttendanceStatus }[]) => {
       const { data: u } = await supabase.auth.getUser();
       const { error } = await supabase.from("attendance").upsert(
-        rows.map((r) => ({ ...r, date, recorded_by: u.user?.id, updated_at: new Date().toISOString() })),
+        rows.map((r) => ({ ...r, date, recorded_by: u.user?.id ?? null, updated_at: new Date().toISOString() })),
         { onConflict: "student_id,date" },
       );
       if (error) throw error;

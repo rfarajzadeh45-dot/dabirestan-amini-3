@@ -56,7 +56,7 @@ export function NotesPanel({ studentId }: { studentId: string }) {
       } else {
         const { error } = await supabase
           .from("notes")
-          .insert({ student_id: studentId, category: form.category, content, date: form.date, author_id: u.user?.id });
+          .insert({ student_id: studentId, category: form.category, content, date: form.date, author_id: u.user?.id ?? null });
         if (error) throw error;
       }
     },

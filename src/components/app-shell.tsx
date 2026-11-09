@@ -128,7 +128,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               className="relative max-w-md flex-1"
               onSubmit={(e) => {
                 e.preventDefault();
-                navigate({ to: "/students", search: { q: q.trim() || undefined } });
+                navigate({ to: "/students", search: q.trim() ? { q: q.trim() } : {} });
               }}
             >
               <Search className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

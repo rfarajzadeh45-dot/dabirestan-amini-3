@@ -17,7 +17,7 @@ export const noteCategoryLabel: Record<NoteCategory, string> = {
 const faDigits = "۰۱۲۳۴۵۶۷۸۹";
 export function fa(v: string | number | null | undefined): string {
   if (v === null || v === undefined) return "";
-  return String(v).replace(/\d/g, (d) => faDigits[Number(d)]);
+  return String(v).replace(/\d/g, (d) => faDigits[Number(d)] ?? d);
 }
 
 export function faNum(n: number, digits = 0): string {
@@ -34,14 +34,14 @@ export function toISODate(d: Date): string {
 export const todayISO = () => toISODate(new Date());
 
 export function shiftDate(iso: string, days: number): string {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [y = 1970, m = 1, d = 1] = iso.split("-").map(Number);
   const dt = new Date(y, m - 1, d);
   dt.setDate(dt.getDate() + days);
   return toISODate(dt);
 }
 
 function parseISO(iso: string) {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [y = 1970, m = 1, d = 1] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
 
