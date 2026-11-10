@@ -36,26 +36,26 @@ function AuthPage() {
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     const p = schema.safeParse({ email, password });
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) { toast.error(p.error.issues[0]?.message ?? "ورودی نامعتبر"); return; }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword(p.data);
     setLoading(false);
-    if (error) return toast.error("ایمیل یا رمز عبور نادرست است");
+    if (error) { toast.error("ایمیل یا رمز عبور نادرست است"); return; }
     navigate({ to: "/dashboard" });
   }
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     const p = schema.safeParse({ email, password });
-    if (!p.success) return toast.error(p.error.issues[0].message);
-    if (!name.trim()) return toast.error("نام و نام خانوادگی را وارد کنید");
+    if (!p.success) { toast.error(p.error.issues[0]?.message ?? "ورودی نامعتبر"); return; }
+    if (!name.trim()) { toast.error("نام و نام خانوادگی را وارد کنید"); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       ...p.data,
       options: { emailRedirectTo: window.location.origin, data: { full_name: name.trim() } },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (data.session) navigate({ to: "/dashboard" });
     else toast.success("ثبت‌نام انجام شد. لطفاً ایمیل خود را برای تأیید حساب بررسی کنید.");
   }

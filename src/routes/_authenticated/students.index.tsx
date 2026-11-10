@@ -15,7 +15,7 @@ import { fa, faNum, todayISO, type AttendanceStatus } from "@/lib/fa";
 import { useMe } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/students/")({
-  validateSearch: (s: Record<string, unknown>): { q?: string } => ({ q: typeof s.q === "string" ? s.q : undefined }),
+  validateSearch: (s: Record<string, unknown>): { q?: string | undefined } => (typeof s["q"] === "string" ? { q: s["q"] } : {}),
   head: () => ({
     meta: [
       { title: "دانش‌آموزان | سامانه مدیریت مدرسه" },

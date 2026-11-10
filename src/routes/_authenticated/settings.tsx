@@ -50,7 +50,7 @@ function useClasses() {
   });
 }
 
-function UsersSection({ myId }: { myId?: string }) {
+function UsersSection({ myId }: { myId?: string | undefined }) {
   const qc = useQueryClient();
   const { data: classes } = useClasses();
   const { data } = useQuery({
@@ -148,7 +148,7 @@ function ClassesSection() {
         {classes?.map((c) => (
           <div key={c.id} className="flex gap-2">
             <Input value={edits[c.id] ?? c.name} onChange={(e) => setEdits({ ...edits, [c.id]: e.target.value })} />
-            <Button size="icon" variant="outline" aria-label="ذخیره" disabled={(edits[c.id] ?? c.name) === c.name} onClick={() => rename.mutate({ id: c.id, name: edits[c.id] })}>
+            <Button size="icon" variant="outline" aria-label="ذخیره" disabled={(edits[c.id] ?? c.name) === c.name} onClick={() => rename.mutate({ id: c.id, name: edits[c.id] ?? c.name })}>
               <Save />
             </Button>
           </div>

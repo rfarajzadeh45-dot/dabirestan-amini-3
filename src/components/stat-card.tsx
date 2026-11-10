@@ -13,7 +13,7 @@ export function StatCard({
   value: string;
   icon: LucideIcon;
   tone?: "primary" | "success" | "destructive" | "warning";
-  hint?: string;
+  hint?: string | undefined;
   delay?: number;
 }) {
   const toneCls = {

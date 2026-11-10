@@ -52,7 +52,7 @@ export function StudentFormDialog({ trigger, student, defaultClassId }: { trigge
   const save = useMutation({
     mutationFn: async () => {
       const p = schema.safeParse(f);
-      if (!p.success) throw new Error(p.error.issues[0].message);
+      if (!p.success) throw new Error(p.error.issues[0]?.message ?? "ورودی نامعتبر");
       const { error } = student
         ? await supabase.from("students").update(p.data).eq("id", student.id)
         : await supabase.from("students").insert(p.data);
