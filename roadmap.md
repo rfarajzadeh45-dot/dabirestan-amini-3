@@ -1,5 +1,5 @@
 - [x] Replace attendance, grade, and note date fields with the shared solar-calendar picker.
 - [x] Verify date conversion, attendance date limits, and signed-in desktop/mobile selection.
-- [ ] Extend existing attendance with persistent registration time and delay, preserving history and permissions.
-- [ ] Add a live school clock and 07:30 countdown/elapsed timer without adding attendance buttons.
-- [ ] Test time calculations, persistence, and desktop/mobile attendance flow.
+- [x] Extend existing attendance with persistent registration time and delay, preserving history and permissions.
+- [x] Add a live school clock and 07:30 countdown/elapsed timer without adding attendance buttons.
+- [x] Test time calculations, persistence, and desktop/mobile attendance flow.
