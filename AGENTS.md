@@ -31,5 +31,8 @@ use the editor.
 
 ## Project rules
 - UI is Persian RTL (`dir="rtl"` on html); display dates via `jalali()` in `src/lib/fa.ts` while storing ISO Gregorian dates — keeps DB queries simple.
-- Data access goes straight from the browser Supabase client with RLS (`can_access_class`/`can_access_student`, roles in `user_roles`) — teachers only see assigned classes without extra server code.
+- App-owned browser imports use `src/lib/backend-client.ts`, whose SDK fetch transport uses `/api/backend/*`; a fixed-upstream server handler verifies user tokens and forwards the same bearer with a publishable key so existing RLS remains authoritative and regional backend blocking is avoided.
+- Keep the original auth storage key and brokered preview storage; never edit generated integration clients or introduce a second app auth client, so existing sessions, refresh and logout stay synchronized.
+- The BFF allowlists school tables and password/signup/refresh/user/logout endpoints only, rejects cross-origin/custom-header-less requests, bounds bodies, strips cookies/admin headers, blocks redirects, and disables caching; extend its allowlist deliberately rather than opening a general proxy.
+- Bundle the Persian font through the installed font package instead of remote font hosts so rendering needs only the website origin.
 - First signed-up user becomes admin via the `handle_new_user` trigger; later users are teachers — do not create test accounts in production, they would consume the admin slot.

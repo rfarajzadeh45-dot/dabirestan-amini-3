@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowRight, Pencil, Plus, Trash2, Award, CalendarX, Clock, CheckCircle2 } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar, BarChart } from "recharts";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { NotesPanel } from "@/components/notes-panel";
@@ -20,6 +20,8 @@ import { average, fa, faNum, jalali, todayISO, type AttendanceStatus } from "@/l
 export const Route = createFileRoute("/_authenticated/students/$studentId")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "پرونده دانش‌آموز | سامانه مدیریت مدرسه" },
       { name: "description", content: "حضور و غیاب، نمرات، معدل و یادداشت‌های دانش‌آموز" },
       { property: "og:title", content: "پرونده دانش‌آموز | سامانه مدیریت مدرسه" },
@@ -140,7 +142,7 @@ function StudentProfile() {
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="date" reversed tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
                     <YAxis orientation="right" domain={[0, 20]} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "Vazirmatn" }} />
+                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "var(--font-sans)" }} />
                     <Line type="monotone" dataKey="میانگین روز" stroke="var(--chart-2)" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="معدل تجمعی" stroke="var(--chart-1)" strokeWidth={3} dot={false} />
                   </LineChart>
@@ -155,7 +157,7 @@ function StudentProfile() {
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="name" reversed tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
                     <YAxis orientation="right" domain={[0, 20]} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "Vazirmatn" }} />
+                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "var(--font-sans)" }} />
                     <Bar dataKey="میانگین" fill="var(--chart-1)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

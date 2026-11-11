@@ -3,7 +3,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { GraduationCap, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
+import { loginErrorMessage } from "@/lib/login-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "ورود | سامانه مدیریت مدرسه" },
       { name: "description", content: "ورود مدیران و معلمان به سامانه مدیریت مدرسه" },
       { property: "og:title", content: "ورود | سامانه مدیریت مدرسه" },
@@ -40,7 +43,7 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword(p.data);
     setLoading(false);
-    if (error) { toast.error("ایمیل یا رمز عبور نادرست است"); return; }
+    if (error) { toast.error(loginErrorMessage(error)); return; }
     navigate({ to: "/dashboard" });
   }
 

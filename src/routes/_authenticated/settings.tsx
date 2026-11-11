@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Trash2, Save } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ import { useMe } from "@/lib/auth";
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "تنظیمات | سامانه مدیریت مدرسه" },
       { name: "description", content: "مدیریت معلمان، دسترسی کلاس‌ها، کلاس‌ها و دروس" },
       { property: "og:title", content: "تنظیمات | سامانه مدیریت مدرسه" },

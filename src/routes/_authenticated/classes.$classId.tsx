@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check, X, Clock, ChevronRight, ChevronLeft, CalendarDays, NotebookPen, Search, CheckCheck, Plus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/classes/$classId")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "حضور و غیاب کلاس | سامانه مدیریت مدرسه" },
       { name: "description", content: "ثبت حضور، غیاب و تأخیر دانش‌آموزان با یک کلیک" },
       { property: "og:title", content: "حضور و غیاب کلاس | سامانه مدیریت مدرسه" },

@@ -18,7 +18,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
 import { useMe } from "@/lib/auth";
 import { fa } from "@/lib/fa";
 

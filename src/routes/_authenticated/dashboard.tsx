@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, School, UserCheck, UserX, Percent, ChevronLeft, Clock } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/backend-client";
 import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
@@ -12,6 +12,8 @@ import { useMe } from "@/lib/auth";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "داشبورد | سامانه مدیریت مدرسه" },
       { name: "description", content: "نمای کلی دانش‌آموزان، کلاس‌ها و حضور و غیاب امروز" },
       { property: "og:title", content: "داشبورد | سامانه مدیریت مدرسه" },
@@ -107,7 +109,7 @@ function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="day" reversed tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
                 <YAxis orientation="right" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid var(--border)", direction: "rtl", fontFamily: "Vazirmatn" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid var(--border)", direction: "rtl", fontFamily: "var(--font-sans)" }} />
                 <Bar dataKey="حاضر" stackId="a" fill="var(--chart-1)" radius={[0, 0, 0, 0]} />
                 <Bar dataKey="تأخیر" stackId="a" fill="var(--chart-4)" />
                 <Bar dataKey="غایب" stackId="a" fill="var(--chart-5)" radius={[6, 6, 0, 0]} />
