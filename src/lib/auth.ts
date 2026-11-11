@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/backend-client";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Me = {
   id: string;

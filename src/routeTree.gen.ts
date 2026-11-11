@@ -18,7 +18,6 @@ import { Route as AuthenticatedClassesIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedClassesClassIdRouteImport } from './routes/_authenticated/classes.$classId'
 import { Route as AuthenticatedStudentsIndexRouteImport } from './routes/_authenticated/students.index'
 import { Route as AuthenticatedStudentsStudentIdRouteImport } from './routes/_authenticated/students.$studentId'
-import { Route as ApiBackendSplatRouteImport } from './routes/api/backend/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -68,11 +67,6 @@ const AuthenticatedStudentsStudentIdRoute =
     path: '/students/$studentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiBackendSplatRoute = ApiBackendSplatRouteImport.update({
-  id: '/api/backend/$',
-  path: '/api/backend/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/classes/': typeof AuthenticatedClassesIndexRoute
   '/students/': typeof AuthenticatedStudentsIndexRoute
 }
@@ -92,7 +85,6 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/classes': typeof AuthenticatedClassesIndexRoute
   '/students': typeof AuthenticatedStudentsIndexRoute
 }
@@ -105,7 +97,6 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/_authenticated/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/_authenticated/classes/': typeof AuthenticatedClassesIndexRoute
   '/_authenticated/students/': typeof AuthenticatedStudentsIndexRoute
 }
@@ -118,7 +109,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/classes/$classId'
     | '/students/$studentId'
-    | '/api/backend/$'
     | '/classes/'
     | '/students/'
   fileRoutesByTo: FileRoutesByTo
@@ -129,7 +119,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/classes/$classId'
     | '/students/$studentId'
-    | '/api/backend/$'
     | '/classes'
     | '/students'
   id:
@@ -141,7 +130,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/classes/$classId'
     | '/_authenticated/students/$studentId'
-    | '/api/backend/$'
     | '/_authenticated/classes/'
     | '/_authenticated/students/'
   fileRoutesById: FileRoutesById
@@ -150,7 +138,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ApiBackendSplatRoute: typeof ApiBackendSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -218,13 +205,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsStudentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/backend/$': {
-      id: '/api/backend/$'
-      path: '/api/backend/$'
-      fullPath: '/api/backend/$'
-      preLoaderRoute: typeof ApiBackendSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -253,7 +233,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  ApiBackendSplatRoute: ApiBackendSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
