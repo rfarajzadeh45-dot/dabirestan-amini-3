@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search } from "lucide-react";
+import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search, Trophy } from "lucide-react";
 import { useState } from "react";
 import {
   Sidebar,
@@ -40,6 +40,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     { title: "داشبورد", url: "/dashboard", icon: LayoutDashboard },
     { title: "کلاس‌ها", url: "/classes", icon: School },
     { title: "دانش‌آموزان", url: "/students", icon: Users },
+    { title: "رتبه‌بندی", url: "/rankings", icon: Trophy },
     ...(me?.isAdmin ? [{ title: "تنظیمات", url: "/settings", icon: Settings }] : []),
   ] as const;
 

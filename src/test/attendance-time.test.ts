@@ -43,3 +43,30 @@ describe("Existing attendance timing", () => {
     expect(durationClock(time.differenceSeconds)).toBe("07:30:00");
   });
 });
+import { periodLateSeconds, periodStatus } from "@/lib/attendance-time";
+const at = (h: number, m: number) => h * 3600 + m * 60;
+describe("Period-based lateness", () => {
+  it("07:45 is 15 minutes late for first class", () => expect(periodLateSeconds(at(7, 45))).toBe(900));
+  it("10:00 is 30 minutes late for second class", () => expect(periodLateSeconds(at(10, 0))).toBe(1800));
+  it("11:10 is 10 minutes late for third class", () => expect(periodLateSeconds(at(11, 10))).toBe(600));
+  it("12:50 is 5 minutes late for fourth class", () => expect(periodLateSeconds(at(12, 50))).toBe(300));
+  it("break time does not count as lateness", () => expect(periodLateSeconds(at(9, 15))).toBe(0));
+  it("saves 30 minutes for a Late click at 10:00 Tehran", () =>
+    expect(attendanceTiming("late", new Date("2026-11-11T06:30:00Z")).delay_seconds).toBe(1800));
+});
+describe("Timetable transitions", () => {
+  it("switches from first class to break at 09:00", () => {
+    expect(periodStatus(at(9, 0) - 1).current?.name).toBe("زنگ اول");
+    const s = periodStatus(at(9, 0));
+    expect(s.phase).toBe("break");
+    expect(s.next?.name).toBe("زنگ دوم");
+    expect(s.remainingSeconds).toBe(1800);
+  });
+  it("shows progress through the current period", () => expect(periodStatus(at(8, 15)).progress).toBe(0.5));
+  it("counts down to first class before school", () => {
+    const s = periodStatus(at(7, 0));
+    expect(s.phase).toBe("before");
+    expect(s.remainingSeconds).toBe(1800);
+  });
+  it("ends the day at 14:15", () => expect(periodStatus(at(14, 15)).phase).toBe("after"));
+});

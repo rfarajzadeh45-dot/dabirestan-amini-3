@@ -2,4 +2,6 @@
 - [x] Verify date conversion, attendance date limits, and signed-in desktop/mobile selection.
 - [x] Extend existing attendance with persistent registration time and delay, preserving history and permissions.
 - [x] Add a live school clock and 07:30 countdown/elapsed timer without adding attendance buttons.
-- [x] Test time calculations, persistence, and desktop/mobile attendance flow.
+- [x] Test time calculations, persistence, and desktop/mobile attendance flow.- [x] Dashboard bell timetable with live period timer.
+- [x] Lateness measured from the active class period start.
+- [x] Per-class Top 10 leaderboards (academic, attendance, most improved).

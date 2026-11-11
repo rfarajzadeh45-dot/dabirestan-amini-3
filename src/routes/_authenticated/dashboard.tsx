@@ -4,6 +4,7 @@ import { Users, School, UserCheck, UserX, Percent, ChevronLeft, Clock } from "lu
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
+import { SchoolSchedule } from "@/components/school-schedule";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { fa, faNum, jalali, shiftDate, todayISO, type AttendanceStatus } from "@/lib/fa";
@@ -99,6 +100,8 @@ function Dashboard() {
           delay={200}
         />
       </div>
+
+      <SchoolSchedule />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <section className="animate-rise rounded-2xl border bg-card p-5 shadow-card lg:col-span-2">
