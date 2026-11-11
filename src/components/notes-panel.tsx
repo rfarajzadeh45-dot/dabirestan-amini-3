@@ -5,7 +5,7 @@ import { Pencil, Trash2, Plus, Save, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { SolarDatePicker } from "@/components/solar-date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { jalali, noteCategoryLabel, todayISO, type NoteCategory } from "@/lib/fa";
@@ -92,7 +92,7 @@ export function NotesPanel({ studentId }: { studentId: string }) {
               {Object.entries(noteCategoryLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+          <SolarDatePicker label="تاریخ یادداشت" value={form.date} onChange={(date) => setForm({ ...form, date })} />
         </div>
         <Textarea
           placeholder="یادداشت آموزشی، مشاهده رفتاری، نقاط قوت یا موارد نیازمند بهبود…"

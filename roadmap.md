@@ -1,0 +1,2 @@
+- [x] Replace attendance, grade, and note date fields with the shared solar-calendar picker.
+- [x] Verify date conversion, attendance date limits, and signed-in desktop/mobile selection.

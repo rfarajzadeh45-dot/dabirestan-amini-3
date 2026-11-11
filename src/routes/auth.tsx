@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "ورود | سامانه مدیریت مدرسه" },
       { name: "description", content: "ورود مدیران و معلمان به سامانه مدیریت مدرسه" },
       { property: "og:title", content: "ورود | سامانه مدیریت مدرسه" },

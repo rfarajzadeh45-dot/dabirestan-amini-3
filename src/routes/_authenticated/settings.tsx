@@ -15,6 +15,8 @@ import { useMe } from "@/lib/auth";
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "تنظیمات | سامانه مدیریت مدرسه" },
       { name: "description", content: "مدیریت معلمان، دسترسی کلاس‌ها، کلاس‌ها و دروس" },
       { property: "og:title", content: "تنظیمات | سامانه مدیریت مدرسه" },

@@ -2,12 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Check, X, Clock, ChevronRight, ChevronLeft, CalendarDays, NotebookPen, Search, CheckCheck, Plus } from "lucide-react";
+import { Check, X, Clock, ChevronRight, ChevronLeft, NotebookPen, Search, CheckCheck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SolarDatePicker } from "@/components/solar-date-picker";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { NotesPanel } from "@/components/notes-panel";
 import { StudentFormDialog } from "@/components/student-form-dialog";
@@ -18,6 +19,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/classes/$classId")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "حضور و غیاب کلاس | سامانه مدیریت مدرسه" },
       { name: "description", content: "ثبت حضور، غیاب و تأخیر دانش‌آموزان با یک کلیک" },
       { property: "og:title", content: "حضور و غیاب کلاس | سامانه مدیریت مدرسه" },
@@ -150,10 +153,7 @@ function ClassPage() {
       <div className="mb-4 grid gap-3 rounded-2xl border bg-card p-4 shadow-card lg:grid-cols-[auto_1fr_auto] lg:items-center">
         <div className="flex items-center gap-2">
           <Button size="icon" variant="outline" aria-label="روز قبل" onClick={() => setDate(shiftDate(date, -1))}><ChevronRight /></Button>
-          <div className="relative">
-            <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input type="date" value={date} max={todayISO()} onChange={(e) => e.target.value && setDate(e.target.value)} className="w-44 pr-9" />
-          </div>
+          <SolarDatePicker label="تاریخ حضور و غیاب" value={date} max={todayISO()} onChange={setDate} className="w-40 shrink-0" />
           <Button size="icon" variant="outline" aria-label="روز بعد" disabled={date >= todayISO()} onClick={() => setDate(shiftDate(date, 1))}><ChevronLeft /></Button>
           <div className="hidden text-sm sm:block">
             <p className="font-medium">{jalali(date, "long")}</p>

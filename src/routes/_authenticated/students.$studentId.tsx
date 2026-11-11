@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { NotesPanel } from "@/components/notes-panel";
+import { SolarDatePicker } from "@/components/solar-date-picker";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,8 @@ import { average, fa, faNum, jalali, todayISO, type AttendanceStatus } from "@/l
 export const Route = createFileRoute("/_authenticated/students/$studentId")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "پرونده دانش‌آموز | سامانه مدیریت مدرسه" },
       { name: "description", content: "حضور و غیاب، نمرات، معدل و یادداشت‌های دانش‌آموز" },
       { property: "og:title", content: "پرونده دانش‌آموز | سامانه مدیریت مدرسه" },
@@ -326,7 +329,7 @@ function GradesTable({
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5"><Label>عنوان (اختیاری)</Label><Input maxLength={100} placeholder="مثلاً میان‌ترم" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
-              <div className="space-y-1.5"><Label>تاریخ</Label><Input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></div>
+              <div className="space-y-1.5"><Label htmlFor="grade-date">تاریخ</Label><SolarDatePicker id="grade-date" label="تاریخ نمره" value={f.date} onChange={(date) => setF({ ...f, date })} /></div>
             </div>
             <DialogFooter className="gap-2 pt-2 sm:justify-start">
               <Button type="submit" disabled={save.isPending}>ذخیره</Button>

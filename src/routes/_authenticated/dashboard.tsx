@@ -12,6 +12,8 @@ import { useMe } from "@/lib/auth";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "داشبورد | سامانه مدیریت مدرسه" },
       { name: "description", content: "نمای کلی دانش‌آموزان، کلاس‌ها و حضور و غیاب امروز" },
       { property: "og:title", content: "داشبورد | سامانه مدیریت مدرسه" },

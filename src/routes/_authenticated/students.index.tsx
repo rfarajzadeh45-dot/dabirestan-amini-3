@@ -18,6 +18,8 @@ export const Route = createFileRoute("/_authenticated/students/")({
   validateSearch: (s: Record<string, unknown>): { q?: string | undefined } => (typeof s["q"] === "string" ? { q: s["q"] } : {}),
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "دانش‌آموزان | سامانه مدیریت مدرسه" },
       { name: "description", content: "جستجو، فیلتر و مدیریت دانش‌آموزان مدرسه" },
       { property: "og:title", content: "دانش‌آموزان | سامانه مدیریت مدرسه" },

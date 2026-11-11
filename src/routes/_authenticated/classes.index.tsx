@@ -9,6 +9,8 @@ import { Progress } from "@/components/ui/progress";
 export const Route = createFileRoute("/_authenticated/classes/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "کلاس‌ها | سامانه مدیریت مدرسه" },
       { name: "description", content: "فهرست کلاس‌ها و وضعیت حضور امروز هر کلاس" },
       { property: "og:title", content: "کلاس‌ها | سامانه مدیریت مدرسه" },
