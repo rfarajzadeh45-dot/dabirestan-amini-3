@@ -34,3 +34,4 @@ use the editor.
 - Use the shared SolarDatePicker and the Persian DayPicker for all date selection; convert selected dates to local ISO dates so calendar presentation never changes persisted records.
 - Data access goes straight from the browser Supabase client with RLS (`can_access_class`/`can_access_student`, roles in `user_roles`) — teachers only see assigned classes without extra server code.
 - First signed-up user becomes admin via the `handle_new_user` trigger; later users are teachers — do not create test accounts in production, they would consume the admin slot.
+- Keep school timezone and attendance timing calculations in the shared attendance-time helper; store optional timing on existing attendance rows so legacy history and status actions stay intact.

@@ -1,0 +1,3 @@
+ALTER TABLE public.attendance ADD COLUMN registered_at timestamptz, ADD COLUMN delay_seconds integer CHECK (delay_seconds >= 0);
+COMMENT ON COLUMN public.attendance.registered_at IS 'Actual present/late registration instant; NULL for untimed historical records or absent status.';
+COMMENT ON COLUMN public.attendance.delay_seconds IS 'Nonnegative whole seconds after 07:30 in Asia/Tehran at late registration; NULL for other statuses or untimed history.';

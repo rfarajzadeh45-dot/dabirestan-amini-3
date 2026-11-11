@@ -17,24 +17,30 @@ export type Database = {
       attendance: {
         Row: {
           date: string
+          delay_seconds: number | null
           id: string
           recorded_by: string | null
+          registered_at: string | null
           status: Database["public"]["Enums"]["attendance_status"]
           student_id: string
           updated_at: string
         }
         Insert: {
           date: string
+          delay_seconds?: number | null
           id?: string
           recorded_by?: string | null
+          registered_at?: string | null
           status: Database["public"]["Enums"]["attendance_status"]
           student_id: string
           updated_at?: string
         }
         Update: {
           date?: string
+          delay_seconds?: number | null
           id?: string
           recorded_by?: string | null
+          registered_at?: string | null
           status?: Database["public"]["Enums"]["attendance_status"]
           student_id?: string
           updated_at?: string
