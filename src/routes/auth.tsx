@@ -1,9 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { GraduationCap, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fa } from "@/lib/fa";
+import { useCountdown, isRateLimited, SIGNUP_RESEND_SECONDS } from "@/lib/auth-timers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +36,25 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendAt, setResendAt] = useState<number | null>(null);
+  const [resending, setResending] = useState(false);
+  const resendLeft = useCountdown(resendAt);
+
+  async function resendVerification() {
+    if (!pendingEmail) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup", email: pendingEmail, options: { emailRedirectTo: window.location.origin },
+    });
+    setResending(false);
+    if (error) {
+      toast.error(isRateLimited(error) ? "درخواست‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید." : "ارسال ایمیل ناموفق بود: " + error.message);
+      return;
+    }
+    toast.success("ایمیل تأیید دوباره ارسال شد.");
+    setResendAt(Date.now() + SIGNUP_RESEND_SECONDS * 1000);
+  }
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -59,7 +80,11 @@ function AuthPage() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     if (data.session) navigate({ to: "/dashboard" });
-    else toast.success("ثبت‌نام انجام شد. لطفاً ایمیل خود را برای تأیید حساب بررسی کنید.");
+    else {
+      toast.success("ثبت‌نام انجام شد. لطفاً ایمیل خود را برای تأیید حساب بررسی کنید.");
+      setPendingEmail(p.data.email);
+      setResendAt(Date.now() + SIGNUP_RESEND_SECONDS * 1000);
+    }
   }
 
   return (
@@ -100,9 +125,20 @@ function AuthPage() {
                 <Field label="ایمیل"><Input dir="ltr" type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
                 <Field label="رمز عبور"><Input dir="ltr" type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></Field>
                 <Button className="w-full" disabled={loading}>{loading && <Loader2 className="animate-spin" />}ورود</Button>
+                <Link to="/forgot-password" className="block text-center text-sm text-primary hover:underline">رمز عبور خود را فراموش کرده‌اید؟</Link>
               </form>
             </TabsContent>
             <TabsContent value="up">
+              {pendingEmail ? (
+                <div className="mt-4 space-y-4 rounded-lg border bg-card p-4">
+                  <p className="text-sm">ایمیل تأیید به <span dir="ltr" className="font-medium">{pendingEmail}</span> ارسال شد. لطفاً صندوق ایمیل (و پوشه اسپم) را بررسی کنید و روی لینک تأیید بزنید.</p>
+                  <Button type="button" variant="outline" className="w-full" disabled={resending || resendLeft > 0} onClick={() => void resendVerification()}>
+                    {resending && <Loader2 className="animate-spin" />}
+                    {resendLeft > 0 ? `ارسال مجدد ایمیل تأیید تا ${fa(resendLeft)} ثانیه دیگر` : "ارسال مجدد ایمیل تأیید"}
+                  </Button>
+                  <button type="button" className="text-xs text-muted-foreground hover:underline" onClick={() => { setPendingEmail(null); setResendAt(null); }}>ثبت‌نام با ایمیل دیگر</button>
+                </div>
+              ) : (
               <form onSubmit={signUp} className="mt-4 space-y-4">
                 <Field label="نام و نام خانوادگی"><Input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></Field>
                 <Field label="ایمیل"><Input dir="ltr" type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
@@ -110,6 +146,7 @@ function AuthPage() {
                 <Button className="w-full" disabled={loading}>{loading && <Loader2 className="animate-spin" />}ایجاد حساب</Button>
                 <p className="text-xs text-muted-foreground">اولین کاربر ثبت‌نام‌شده به‌عنوان مدیر شناخته می‌شود؛ کاربران بعدی معلم هستند.</p>
               </form>
+              )}
             </TabsContent>
           </Tabs>
         </div>
