@@ -36,3 +36,4 @@ use the editor.
 - First signed-up user becomes admin via the `handle_new_user` trigger; later users are teachers — do not create test accounts in production, they would consume the admin slot.
 - Keep school timezone, the bell timetable, and period-based lateness in the shared attendance-time helper; store optional timing on existing attendance rows so legacy history and status actions stay intact.
 - Leaderboard math lives in `src/lib/rankings.ts` and is computed client-side per class from existing grades/attendance — no ranking tables to keep in sync.
+- Serve font weights from `public/fonts/` through local CSS `@font-face` rules, retaining their bundled license — removes runtime font-service dependencies without new infrastructure.

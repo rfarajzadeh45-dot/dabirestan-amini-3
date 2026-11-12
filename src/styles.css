@@ -2,6 +2,54 @@
 @source "../src";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/vazirmatn/Vazirmatn-ExtraBold.woff2") format("woff2");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

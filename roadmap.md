@@ -5,3 +5,5 @@
 - [x] Test time calculations, persistence, and desktop/mobile attendance flow.- [x] Dashboard bell timetable with live period timer.
 - [x] Lateness measured from the active class period start.
 - [x] Per-class Top 10 leaderboards (academic, attendance, most improved).
+- [x] Bundle the six official Vazirmatn weights and replace Google font links with local font rules.
+- [x] Verify local font loading, production public-asset inclusion configuration, automatic build checks, and existing tests.
