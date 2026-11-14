@@ -57,7 +57,7 @@ function Rankings() {
       const s = await supabase.from("students").select("id,first_name,last_name,student_code").eq("class_id", classId);
       if (s.error) throw s.error;
       const ids = (s.data ?? []).map((x) => x.id);
-      const since = shiftDate(today, -400);
+      const since = shiftDate(today, -120);
       const [g, a] = ids.length ? await Promise.all([
         fetchAll((f, t) => supabase.from("grades").select("id,student_id,score,date").in("student_id", ids).order("id").range(f, t)),
         fetchAll((f, t) => supabase.from("attendance").select("id,student_id,date,status").in("student_id", ids).gte("date", since).order("id").range(f, t)),
