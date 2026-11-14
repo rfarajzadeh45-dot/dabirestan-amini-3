@@ -82,6 +82,41 @@ export type Database = {
           },
         ]
       }
+      class_timetable: {
+        Row: {
+          class_id: string
+          day: number
+          id: string
+          period: number
+          subject: string
+          teacher: string
+        }
+        Insert: {
+          class_id: string
+          day: number
+          id?: string
+          period: number
+          subject: string
+          teacher?: string
+        }
+        Update: {
+          class_id?: string
+          day?: number
+          id?: string
+          period?: number
+          subject?: string
+          teacher?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_timetable_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           created_at: string

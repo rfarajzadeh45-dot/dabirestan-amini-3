@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SolarDatePicker } from "@/components/solar-date-picker";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ClassTimetable } from "@/components/class-timetable";
 import { NotesPanel } from "@/components/notes-panel";
 import { StudentFormDialog } from "@/components/student-form-dialog";
 import { fa, faNum, jalali, shiftDate, type AttendanceStatus } from "@/lib/fa";
@@ -190,6 +191,8 @@ function ClassPage() {
           </>
         }
       />
+
+      <ClassTimetable classId={classId} />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-y py-3">
         <div className="flex items-center gap-3">

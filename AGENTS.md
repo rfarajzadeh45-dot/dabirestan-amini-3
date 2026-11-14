@@ -37,3 +37,4 @@ use the editor.
 - Keep school timezone, the bell timetable, and period-based lateness in the shared attendance-time helper; store optional timing on existing attendance rows so legacy history and status actions stay intact.
 - Leaderboard math lives in `src/lib/rankings.ts` and is computed client-side per class from existing grades/attendance — no ranking tables to keep in sync.
 - Serve font weights from `public/fonts/` through local CSS `@font-face` rules, retaining their bundled license — removes runtime font-service dependencies without new infrastructure.
+- Class weekly timetables live in `class_timetable` (class_id, day 0=Sat…4=Wed, period 1–4) and render via `ClassTimetable` at the top of the class page — per-class rows keep each class independent.

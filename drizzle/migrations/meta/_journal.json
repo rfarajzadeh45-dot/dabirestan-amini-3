@@ -36,6 +36,13 @@
       "when": 1794672680171,
       "tag": "0004_announcements",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794674630724,
+      "tag": "0005_class_timetable",
+      "breakpoints": true
     }
   ]
 }
