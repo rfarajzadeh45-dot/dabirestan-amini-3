@@ -54,12 +54,15 @@ function Rankings() {
     enabled: !!classId,
     refetchInterval: 60_000,
     queryFn: async () => {
-      const [s, g, a] = await Promise.all([
-        supabase.from("students").select("id,first_name,last_name,student_code").eq("class_id", classId),
-        fetchAll((f, t) => supabase.from("grades").select("student_id,score,date,students!inner(class_id)").eq("students.class_id", classId).order("id").range(f, t)),
-        fetchAll((f, t) => supabase.from("attendance").select("student_id,date,status,students!inner(class_id)").eq("students.class_id", classId).order("id").range(f, t)),
-      ]);
-      for (const r of [s, g, a]) if (r.error) throw r.error;
+      const s = await supabase.from("students").select("id,first_name,last_name,student_code").eq("class_id", classId);
+      if (s.error) throw s.error;
+      const ids = (s.data ?? []).map((x) => x.id);
+      const since = shiftDate(today, -400);
+      const [g, a] = ids.length ? await Promise.all([
+        fetchAll((f, t) => supabase.from("grades").select("id,student_id,score,date").in("student_id", ids).order("id").range(f, t)),
+        fetchAll((f, t) => supabase.from("attendance").select("id,student_id,date,status").in("student_id", ids).gte("date", since).order("id").range(f, t)),
+      ]) : [{ data: [], error: null }, { data: [], error: null }];
+      for (const r of [g, a]) if (r.error) throw r.error;
       return {
         students: (s.data ?? []) as RStudent[],
         grades: (g.data ?? []).map((x) => ({ student_id: x.student_id, score: Number(x.score), date: x.date })) as RGrade[],
