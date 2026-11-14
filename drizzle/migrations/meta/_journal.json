@@ -64,6 +64,13 @@
       "when": 1794680335578,
       "tag": "0008_demo_data_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794681916982,
+      "tag": "0009_faster_record_access_checks",
+      "breakpoints": true
     }
   ]
 }
