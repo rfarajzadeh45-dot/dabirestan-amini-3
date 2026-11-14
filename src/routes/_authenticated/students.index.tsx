@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StudentFormDialog } from "@/components/student-form-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { fa, faNum, todayISO, type AttendanceStatus } from "@/lib/fa";
+import { compareStudentName, fa, faNum, todayISO, type AttendanceStatus } from "@/lib/fa";
 import { useMe } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/students/")({
@@ -47,7 +47,7 @@ function StudentsPage() {
         .order("student_code")
         .range(0, 4999);
       if (error) throw error;
-      return data;
+      return [...data].sort((a, b) => (a.classes?.sort_order ?? 0) - (b.classes?.sort_order ?? 0) || compareStudentName(a, b));
     },
   });
   const { data: classes } = useQuery({

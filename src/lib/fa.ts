@@ -63,3 +63,23 @@ export function average(nums: number[]): number | null {
 export function fullName(s: { first_name: string; last_name: string }) {
   return `${s.first_name} ${s.last_name}`;
 }
+
+const faCollator = new Intl.Collator("fa", { sensitivity: "base", numeric: true });
+/** Normalizes Arabic letter variants (ي/ك/ى/ة) and invisible joiners for sorting only. */
+export function normalizeFa(s: string): string {
+  return s
+    .replace(/[يى]/g, "ی")
+    .replace(/ك/g, "ک")
+    .replace(/ة/g, "ه")
+    .replace(/[\u200c\u200f\u064b-\u065f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+/** Compare by full displayed name; its first word is the family name in the school lists. */
+export function compareStudentName(a: { first_name: string; last_name: string }, b: { first_name: string; last_name: string }): number {
+  const ka = normalizeFa(fullName(a)).split(" ");
+  const kb = normalizeFa(fullName(b)).split(" ");
+  const first = faCollator.compare(ka[0] ?? "", kb[0] ?? "");
+  if (first) return first;
+  return faCollator.compare(ka.slice(1).join(" "), kb.slice(1).join(" "));
+}

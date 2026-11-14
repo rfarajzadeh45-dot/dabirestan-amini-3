@@ -15,6 +15,7 @@ import { ClassTimetable } from "@/components/class-timetable";
 import { NotesPanel } from "@/components/notes-panel";
 import { StudentFormDialog } from "@/components/student-form-dialog";
 import { fa, faNum, jalali, shiftDate, type AttendanceStatus } from "@/lib/fa";
+import { compareStudentName } from "@/lib/fa";
 import { useMe } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { attendanceTiming, durationClock, schoolTime, type AttendanceTiming } from "@/lib/attendance-time";
@@ -71,7 +72,7 @@ function ClassPage() {
         .eq("class_id", classId)
         .order("last_name");
       if (error) throw error;
-      return data;
+      return [...data].sort(compareStudentName);
     },
   });
 
