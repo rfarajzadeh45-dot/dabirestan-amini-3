@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, School, UserCheck, UserX, Percent, ChevronLeft, Clock, FileSpreadsheet, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { fetchAll } from "@/lib/fetch-all";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { SchoolSchedule } from "@/components/school-schedule";
@@ -60,7 +61,7 @@ function Dashboard() {
   const { data: week } = useQuery({
     queryKey: ["attendance-week", weekStart],
     queryFn: async () => {
-      const { data, error } = await supabase.from("attendance").select("date,status").gte("date", weekStart).lte("date", today).range(0, 4999);
+      const { data, error } = await fetchAll((f, t) => supabase.from("attendance").select("date,status").gte("date", weekStart).lte("date", today).order("id").range(f, t));
       if (error) throw error;
       return data;
     },

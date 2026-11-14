@@ -37,6 +37,7 @@ function SettingsPage() {
         <ClassesSection />
         <SubjectsSection />
       </div>
+      <DemoDataSection />
     </div>
   );
 }
@@ -224,6 +225,35 @@ function SubjectsSection() {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+function DemoDataSection() {
+  const qc = useQueryClient();
+  const clear = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("clear_demo_data");
+      if (error) throw error;
+      return data as { grades: number; attendance: number; notes: number };
+    },
+    onSuccess: (r) => {
+      toast.success(`داده‌های نمایشی پاک شد (${r.grades} نمره، ${r.attendance} حضور، ${r.notes} یادداشت)`);
+      qc.invalidateQueries();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <section className="rounded-2xl border bg-card p-5 shadow-card">
+      <h2 className="font-semibold">داده‌های نمایشی</h2>
+      <p className="mb-4 mt-1 text-sm text-muted-foreground">
+        فقط نمرات، حضور و غیاب و یادداشت‌هایی که به‌عنوان داده نمایشی ساخته شده‌اند حذف می‌شوند. دانش‌آموزان، کلاس‌ها، دروس و اطلاعات واقعی دست‌نخورده می‌مانند.
+      </p>
+      <ConfirmDialog
+        description="همه داده‌های نمایشی (نمرات، حضور و غیاب و یادداشت‌ها) برای همیشه حذف خواهند شد. اطلاعات واقعی حفظ می‌شود."
+        onConfirm={() => clear.mutate()}
+        trigger={<Button variant="destructive" disabled={clear.isPending}><Trash2 />پاک کردن داده‌های نمایشی</Button>}
+      />
     </section>
   );
 }

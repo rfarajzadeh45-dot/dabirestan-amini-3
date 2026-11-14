@@ -46,6 +46,7 @@ export type Database = {
           date: string
           delay_seconds: number | null
           id: string
+          is_demo: boolean
           recorded_by: string | null
           registered_at: string | null
           status: Database["public"]["Enums"]["attendance_status"]
@@ -56,6 +57,7 @@ export type Database = {
           date: string
           delay_seconds?: number | null
           id?: string
+          is_demo?: boolean
           recorded_by?: string | null
           registered_at?: string | null
           status: Database["public"]["Enums"]["attendance_status"]
@@ -66,6 +68,7 @@ export type Database = {
           date?: string
           delay_seconds?: number | null
           id?: string
+          is_demo?: boolean
           recorded_by?: string | null
           registered_at?: string | null
           status?: Database["public"]["Enums"]["attendance_status"]
@@ -177,6 +180,7 @@ export type Database = {
           created_by: string | null
           date: string
           id: string
+          is_demo: boolean
           score: number
           student_id: string
           subject_id: string
@@ -187,6 +191,7 @@ export type Database = {
           created_by?: string | null
           date?: string
           id?: string
+          is_demo?: boolean
           score: number
           student_id: string
           subject_id: string
@@ -197,6 +202,7 @@ export type Database = {
           created_by?: string | null
           date?: string
           id?: string
+          is_demo?: boolean
           score?: number
           student_id?: string
           subject_id?: string
@@ -227,6 +233,7 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          is_demo: boolean
           student_id: string
         }
         Insert: {
@@ -236,6 +243,7 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          is_demo?: boolean
           student_id: string
         }
         Update: {
@@ -245,6 +253,7 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          is_demo?: boolean
           student_id?: string
         }
         Relationships: [
@@ -385,6 +394,7 @@ export type Database = {
         Args: { _student_id: string; _user_id: string }
         Returns: boolean
       }
+      clear_demo_data: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

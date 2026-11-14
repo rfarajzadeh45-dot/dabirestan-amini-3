@@ -1,3 +1,4 @@
+import { fetchAll } from "@/lib/fetch-all";
 import { supabase } from "@/integrations/supabase/client";
 import { statusLabel, type AttendanceStatus } from "@/lib/fa";
 
@@ -23,15 +24,15 @@ const jal = (iso: string) =>
 
 /** Builds an Excel-compatible CSV of attendance between two ISO dates (optionally one class). */
 export async function buildAttendanceCsv(from: string, to: string, classId?: string): Promise<Blob> {
-  let q = supabase
-    .from("attendance")
-    .select("date,status,delay_seconds,students!inner(first_name,last_name,student_code,class_id,classes(name))")
-    .gte("date", from)
-    .lte("date", to)
-    .order("date")
-    .range(0, 9999);
-  if (classId) q = q.eq("students.class_id", classId);
-  const { data, error } = await q;
+  const { data, error } = await fetchAll((f, t) => {
+    let q = supabase
+      .from("attendance")
+      .select("date,status,delay_seconds,students!inner(first_name,last_name,student_code,class_id,classes(name))")
+      .gte("date", from)
+      .lte("date", to);
+    if (classId) q = q.eq("students.class_id", classId);
+    return q.order("date").order("id").range(f, t);
+  });
   if (error) throw error;
   const rows: unknown[][] = [["تاریخ", "کلاس", "شماره دانش‌آموزی", "نام", "نام خانوادگی", "وضعیت", "تأخیر (دقیقه)"]];
   for (const r of data ?? []) {

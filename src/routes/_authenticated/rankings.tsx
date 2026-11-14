@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Medal, Minus, Trophy } from "lucide-react";
 import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
+import { fetchAll } from "@/lib/fetch-all";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,8 +56,8 @@ function Rankings() {
     queryFn: async () => {
       const [s, g, a] = await Promise.all([
         supabase.from("students").select("id,first_name,last_name,student_code").eq("class_id", classId),
-        supabase.from("grades").select("student_id,score,date,students!inner(class_id)").eq("students.class_id", classId).range(0, 9999),
-        supabase.from("attendance").select("student_id,date,status,students!inner(class_id)").eq("students.class_id", classId).range(0, 19999),
+        fetchAll((f, t) => supabase.from("grades").select("student_id,score,date,students!inner(class_id)").eq("students.class_id", classId).order("id").range(f, t)),
+        fetchAll((f, t) => supabase.from("attendance").select("student_id,date,status,students!inner(class_id)").eq("students.class_id", classId).order("id").range(f, t)),
       ]);
       for (const r of [s, g, a]) if (r.error) throw r.error;
       return {

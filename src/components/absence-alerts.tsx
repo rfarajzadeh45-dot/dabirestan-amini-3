@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
+import { fetchAll } from "@/lib/fetch-all";
 import { supabase } from "@/integrations/supabase/client";
 import { faNum, shiftDate, todayISO } from "@/lib/fa";
 
@@ -29,13 +30,16 @@ export function AbsenceAlerts() {
   const { data } = useQuery({
     queryKey: ["absence-alerts", from],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("attendance")
-        .select("status,students(id,first_name,last_name,classes(name))")
-        .gte("date", from)
-        .lte("date", today)
-        .in("status", ["absent", "late"])
-        .range(0, 9999);
+      const { data, error } = await fetchAll((f, t) =>
+        supabase
+          .from("attendance")
+          .select("status,students(id,first_name,last_name,classes(name))")
+          .gte("date", from)
+          .lte("date", today)
+          .in("status", ["absent", "late"])
+          .order("id")
+          .range(f, t),
+      );
       if (error) throw error;
       return absenceAlerts(data as unknown as Row[]);
     },
