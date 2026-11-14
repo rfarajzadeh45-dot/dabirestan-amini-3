@@ -66,11 +66,16 @@ function StudentProfile() {
     },
   });
   const { data: subjects } = useQuery({
-    queryKey: ["subjects"],
+    queryKey: ["class-subjects", s?.class_id],
+    enabled: !!s?.class_id,
     queryFn: async () => {
-      const { data, error } = await supabase.from("subjects").select("id,name,sort_order").order("sort_order");
+      const { data, error } = await supabase
+        .from("class_subjects")
+        .select("sort_order,subjects(id,name)")
+        .eq("class_id", s!.class_id)
+        .order("sort_order");
       if (error) throw error;
-      return data;
+      return data.flatMap((r) => (r.subjects ? [{ id: r.subjects.id, name: r.subjects.name, sort_order: r.sort_order }] : []));
     },
   });
 

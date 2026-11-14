@@ -162,36 +162,52 @@ function ClassesSection() {
 
 function SubjectsSection() {
   const qc = useQueryClient();
+  const { data: classes } = useClasses();
+  const [classId, setClassId] = useState("");
+  const cid = classId || classes?.[0]?.id || "";
   const [name, setName] = useState("");
   const { data: subjects } = useQuery({
-    queryKey: ["subjects"],
+    queryKey: ["class-subjects", cid],
+    enabled: !!cid,
     queryFn: async () => {
-      const { data, error } = await supabase.from("subjects").select("id,name,sort_order").order("sort_order");
+      const { data, error } = await supabase.from("class_subjects").select("sort_order,subjects(id,name)").eq("class_id", cid).order("sort_order");
       if (error) throw error;
-      return data;
+      return data.flatMap((r) => (r.subjects ? [r.subjects] : []));
     },
   });
   const add = useMutation({
     mutationFn: async () => {
       const n = name.trim();
       if (!n || n.length > 40) throw new Error("نام درس معتبر نیست");
-      const { error } = await supabase.from("subjects").insert({ name: n, sort_order: (subjects?.length ?? 0) + 1 });
-      if (error) throw new Error(error.code === "23505" ? "این درس قبلاً وجود دارد" : error.message);
+      if (subjects?.some((s) => s.name === n)) throw new Error("این درس قبلاً برای این کلاس ثبت شده است");
+      let { data: sub } = await supabase.from("subjects").select("id").eq("name", n).maybeSingle();
+      if (!sub) {
+        const r = await supabase.from("subjects").insert({ name: n, sort_order: 100 }).select("id").single();
+        if (r.error) throw r.error;
+        sub = r.data;
+      }
+      const { error } = await supabase.from("class_subjects").insert({ class_id: cid, subject_id: sub.id, sort_order: (subjects?.length ?? 0) + 1 });
+      if (error) throw error;
     },
-    onSuccess: () => { toast.success("درس اضافه شد"); setName(""); qc.invalidateQueries({ queryKey: ["subjects"] }); },
+    onSuccess: () => { toast.success("درس اضافه شد"); setName(""); qc.invalidateQueries({ queryKey: ["class-subjects"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("subjects").delete().eq("id", id);
+      const { count } = await supabase.from("grades").select("id, students!inner(class_id)", { count: "exact", head: true }).eq("subject_id", id).eq("students.class_id", cid);
+      if (count) throw new Error("برای این درس نمره ثبت شده است؛ ابتدا نمرات را حذف کنید");
+      const { error } = await supabase.from("class_subjects").delete().eq("class_id", cid).eq("subject_id", id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("درس حذف شد"); qc.invalidateQueries(); },
+    onSuccess: () => { toast.success("درس از کلاس حذف شد"); qc.invalidateQueries({ queryKey: ["class-subjects"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
   return (
     <section className="rounded-2xl border bg-card p-5 shadow-card">
-      <h2 className="mb-4 font-semibold">دروس</h2>
+      <h2 className="mb-4 font-semibold">دروس هر کلاس</h2>
+      <select className="mb-3 h-9 w-full rounded-md border bg-background px-3 text-sm" value={cid} onChange={(e) => setClassId(e.target.value)} aria-label="انتخاب کلاس">
+        {classes?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </select>
       <form className="mb-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); add.mutate(); }}>
         <Input placeholder="نام درس جدید" value={name} onChange={(e) => setName(e.target.value)} />
         <Button type="submit"><Plus />افزودن</Button>
@@ -201,7 +217,7 @@ function SubjectsSection() {
           <li key={s.id} className="flex items-center justify-between px-3 py-2 text-sm">
             {s.name}
             <ConfirmDialog
-              description={`درس «${s.name}» و تمام نمرات ثبت‌شده آن حذف خواهد شد.`}
+              description={`درس «${s.name}» از فهرست دروس این کلاس حذف خواهد شد.`}
               onConfirm={() => del.mutate(s.id)}
               trigger={<Button size="icon" variant="ghost" className="size-8 text-destructive" aria-label="حذف"><Trash2 className="size-4" /></Button>}
             />
