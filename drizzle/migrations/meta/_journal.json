@@ -43,6 +43,13 @@
       "when": 1794674630724,
       "tag": "0005_class_timetable",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794675905272,
+      "tag": "0006_backup_old_student_data",
+      "breakpoints": true
     }
   ]
 }
