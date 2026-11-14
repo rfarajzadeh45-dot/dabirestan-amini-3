@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Check, X, Clock, ChevronRight, ChevronLeft, NotebookPen, Search, CheckCheck, Plus } from "lucide-react";
+import { Check, X, Clock, ChevronRight, ChevronLeft, NotebookPen, Search, CheckCheck, Plus, FileSpreadsheet } from "lucide-react";
+import { buildAttendanceCsv, downloadBlob } from "@/lib/export";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
@@ -158,6 +159,20 @@ function ClassPage() {
         subtitle={`${faNum(students?.length ?? 0)} دانش‌آموز`}
         actions={
           <>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                try {
+                  const blob = await buildAttendanceCsv(shiftDate(schoolToday, -29), schoolToday, classId);
+                  downloadBlob(blob, `class-${cls?.name ?? classId}-attendance.csv`);
+                  toast.success("فایل اکسل حضور کلاس آماده شد");
+                } catch {
+                  toast.error("دریافت فایل ناموفق بود");
+                }
+              }}
+            >
+              <FileSpreadsheet />خروجی اکسل
+            </Button>
             {me?.isAdmin && (
               <StudentFormDialog defaultClassId={classId} trigger={<Button variant="outline"><Plus />دانش‌آموز جدید</Button>} />
             )}

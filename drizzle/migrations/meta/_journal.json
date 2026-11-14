@@ -29,6 +29,13 @@
       "when": 1794409893689,
       "tag": "0003_restrict_has_role",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794672680171,
+      "tag": "0004_announcements",
+      "breakpoints": true
     }
   ]
 }

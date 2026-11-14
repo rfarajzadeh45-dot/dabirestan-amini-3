@@ -1,10 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Users, School, UserCheck, UserX, Percent, ChevronLeft, Clock } from "lucide-react";
+import { Users, School, UserCheck, UserX, Percent, ChevronLeft, Clock, FileSpreadsheet, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { SchoolSchedule } from "@/components/school-schedule";
+import { AnnouncementsPanel } from "@/components/announcements-panel";
+import { AbsenceAlerts } from "@/components/absence-alerts";
+import { Button } from "@/components/ui/button";
+import { buildAttendanceCsv, downloadBlob } from "@/lib/export";
+import { toast } from "sonner";
+import { useState } from "react";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { fa, faNum, jalali, shiftDate, todayISO, type AttendanceStatus } from "@/lib/fa";
@@ -27,6 +33,19 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const today = todayISO();
   const { data: me } = useMe();
+  const [exporting, setExporting] = useState(false);
+  const exportMonth = async () => {
+    setExporting(true);
+    try {
+      const blob = await buildAttendanceCsv(shiftDate(today, -29), today);
+      downloadBlob(blob, `attendance-${today}.csv`);
+      toast.success("فایل اکسل حضور و غیاب آماده شد");
+    } catch {
+      toast.error("دریافت فایل ناموفق بود");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const { data: classes } = useQuery({
     queryKey: ["classes-with-count"],
@@ -84,6 +103,11 @@ function Dashboard() {
       <PageHeader
         title={`سلام${me?.fullName ? `، ${me.fullName}` : ""} 👋`}
         subtitle={<>امروز {jalali(today, "long")}</>}
+        actions={
+          <Button variant="outline" onClick={exportMonth} disabled={exporting}>
+            {exporting ? <Loader2 className="animate-spin" /> : <FileSpreadsheet />}خروجی اکسل حضور ۳۰ روز اخیر
+          </Button>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -147,6 +171,11 @@ function Dashboard() {
             {recent && recent.length === 0 && <p className="text-sm text-muted-foreground">هنوز رکوردی ثبت نشده است.</p>}
           </ul>
         </section>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <AnnouncementsPanel />
+        <AbsenceAlerts />
       </div>
 
       <section className="mt-6">

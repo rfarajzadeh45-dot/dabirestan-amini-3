@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <Sidebar side="right" collapsible="icon">
+        <Sidebar side="right" collapsible="icon" className="print:hidden">
           <SidebarHeader className="px-3 py-4">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton asChild isActive={path.startsWith(item.url)} tooltip={item.title}>
                         <Link to={item.url}>
-                          <item.icon />
+                          <item.icon className="transition-transform duration-200 group-hover/menu-item:scale-110" />
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -123,7 +123,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </Sidebar>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur sm:px-6">
+          <header className="print:hidden sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur sm:px-6">
             <SidebarTrigger />
             <form
               className="relative max-w-md flex-1"
@@ -141,7 +141,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               />
             </form>
           </header>
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+          <main key={path} className="animate-page flex-1 px-4 py-6 sm:px-6 lg:px-8 print:p-0">{children}</main>
         </div>
       </div>
     </SidebarProvider>
