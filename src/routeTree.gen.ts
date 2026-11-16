@@ -13,7 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthenticatedChildrenRouteImport } from './routes/_authenticated/children'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMyReportRouteImport } from './routes/_authenticated/my-report'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedClassesIndexRouteImport } from './routes/_authenticated/classes.index'
@@ -40,9 +42,19 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedChildrenRoute = AuthenticatedChildrenRouteImport.update({
+  id: '/children',
+  path: '/children',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyReportRoute = AuthenticatedMyReportRouteImport.update({
+  id: '/my-report',
+  path: '/my-report',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRankingsRoute = AuthenticatedRankingsRouteImport.update({
@@ -84,7 +96,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-report': typeof AuthenticatedMyReportRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
@@ -96,7 +110,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-report': typeof AuthenticatedMyReportRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
@@ -110,7 +126,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/_authenticated/children': typeof AuthenticatedChildrenRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/my-report': typeof AuthenticatedMyReportRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/classes/$classId': typeof AuthenticatedClassesClassIdRoute
@@ -124,7 +142,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/forgot-password'
+    | '/children'
     | '/dashboard'
+    | '/my-report'
     | '/rankings'
     | '/settings'
     | '/classes/$classId'
@@ -136,7 +156,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/forgot-password'
+    | '/children'
     | '/dashboard'
+    | '/my-report'
     | '/rankings'
     | '/settings'
     | '/classes/$classId'
@@ -149,7 +171,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/forgot-password'
+    | '/_authenticated/children'
     | '/_authenticated/dashboard'
+    | '/_authenticated/my-report'
     | '/_authenticated/rankings'
     | '/_authenticated/settings'
     | '/_authenticated/classes/$classId'
@@ -195,11 +219,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/children': {
+      id: '/_authenticated/children'
+      path: '/children'
+      fullPath: '/children'
+      preLoaderRoute: typeof AuthenticatedChildrenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-report': {
+      id: '/_authenticated/my-report'
+      path: '/my-report'
+      fullPath: '/my-report'
+      preLoaderRoute: typeof AuthenticatedMyReportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/rankings': {
@@ -248,7 +286,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedChildrenRoute: typeof AuthenticatedChildrenRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMyReportRoute: typeof AuthenticatedMyReportRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedClassesClassIdRoute: typeof AuthenticatedClassesClassIdRoute
@@ -258,7 +298,9 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedChildrenRoute: AuthenticatedChildrenRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMyReportRoute: AuthenticatedMyReportRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedClassesClassIdRoute: AuthenticatedClassesClassIdRoute,

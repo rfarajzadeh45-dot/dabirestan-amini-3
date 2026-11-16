@@ -266,24 +266,53 @@ export type Database = {
           },
         ]
       }
+      parent_children: {
+        Row: {
+          created_at: string
+          parent_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          parent_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          parent_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_children_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           full_name: string
           id: string
+          username: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           full_name?: string
           id: string
+          username?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           full_name?: string
           id?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -295,6 +324,7 @@ export type Database = {
           id: string
           last_name: string
           student_code: string
+          user_id: string | null
         }
         Insert: {
           class_id: string
@@ -303,6 +333,7 @@ export type Database = {
           id?: string
           last_name: string
           student_code: string
+          user_id?: string | null
         }
         Update: {
           class_id?: string
@@ -311,6 +342,7 @@ export type Database = {
           id?: string
           last_name?: string
           student_code?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -394,6 +426,14 @@ export type Database = {
         Args: { _student_id: string; _user_id: string }
         Returns: boolean
       }
+      can_view_class: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_student: {
+        Args: { _student_id: string; _user_id: string }
+        Returns: boolean
+      }
       clear_demo_data: { Args: never; Returns: Json }
       has_role: {
         Args: {
@@ -404,7 +444,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "teacher"
+      app_role: "admin" | "teacher" | "student" | "parent"
       attendance_status: "present" | "absent" | "late"
       note_category: "general" | "behavior" | "strength" | "improvement"
     }
@@ -534,7 +574,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "teacher"],
+      app_role: ["admin", "teacher", "student", "parent"],
       attendance_status: ["present", "absent", "late"],
       note_category: ["general", "behavior", "strength", "improvement"],
     },

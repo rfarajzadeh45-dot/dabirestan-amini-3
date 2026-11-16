@@ -33,7 +33,8 @@ use the editor.
 - UI is Persian RTL (`dir="rtl"` on html); display dates via `jalali()` in `src/lib/fa.ts` while storing ISO Gregorian dates — keeps DB queries simple.
 - Use the shared SolarDatePicker and the Persian DayPicker for all date selection; convert selected dates to local ISO dates so calendar presentation never changes persisted records.
 - Data access goes straight from the browser Supabase client with RLS (`can_access_class`/`can_access_student`, roles in `user_roles`) — teachers only see assigned classes without extra server code.
-- First signed-up user becomes admin via the `handle_new_user` trigger; later users are teachers — do not create test accounts in production, they would consume the admin slot.
+- Sign-in is username + password only: usernames map to internal `<username>@users.school.local` addresses (`src/lib/username.ts`); admins create every account via server functions in `src/lib/accounts.functions.ts`, which set the role explicitly — roles never come from user input.
+- Students (`students.user_id`) and parents (`parent_children`) read records through `can_view_student`/`can_view_class`; writes to grades/attendance/notes stay staff-only via `can_access_student`.
 - Keep school timezone, the bell timetable, and period-based lateness in the shared attendance-time helper; store optional timing on existing attendance rows so legacy history and status actions stay intact.
 - Leaderboard math lives in `src/lib/rankings.ts` and is computed client-side per class from existing grades/attendance — no ranking tables to keep in sync.
 - Serve font weights from `public/fonts/` through local CSS `@font-face` rules, retaining their bundled license — removes runtime font-service dependencies without new infrastructure.

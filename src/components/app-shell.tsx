@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search, Trophy } from "lucide-react";
-import { useState } from "react";
+import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search, Trophy, BookOpen, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { homeForRole, roleLabel } from "@/lib/username";
 import {
   Sidebar,
   SidebarContent,
@@ -27,8 +29,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [q, setQ] = useState("");
+  const qc = useQueryClient();
+  const staff = !!me?.isStaff;
+  // Students/parents only have their own page; the database already hides everything else.
+  useEffect(() => {
+    if (!me || staff) return;
+    const home = homeForRole(me.role);
+    if (!path.startsWith(home)) navigate({ to: home, replace: true });
+  }, [me, staff, path, navigate]);
   const { data: classes } = useQuery({
     queryKey: ["classes"],
+    enabled: staff,
     queryFn: async () => {
       const { data, error } = await supabase.from("classes").select("id,name,sort_order").order("sort_order");
       if (error) throw error;
@@ -36,13 +47,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     },
   });
 
-  const main = [
+  type NavItem = { title: string; url: "/dashboard" | "/classes" | "/students" | "/rankings" | "/settings" | "/my-report" | "/children"; icon: typeof BookOpen };
+  const main: NavItem[] = me?.role === "student"
+    ? [{ title: "کارنامه من", url: "/my-report", icon: BookOpen }]
+    : me?.role === "parent"
+    ? [{ title: "فرزندان من", url: "/children", icon: Heart }]
+    : [
     { title: "داشبورد", url: "/dashboard", icon: LayoutDashboard },
     { title: "کلاس‌ها", url: "/classes", icon: School },
     { title: "دانش‌آموزان", url: "/students", icon: Users },
     { title: "رتبه‌بندی", url: "/rankings", icon: Trophy },
-    ...(me?.isAdmin ? [{ title: "تنظیمات", url: "/settings", icon: Settings }] : []),
-  ] as const;
+    ...(me?.isAdmin ? [{ title: "تنظیمات", url: "/settings" as const, icon: Settings }] : []),
+  ];
 
   return (
     <SidebarProvider>
@@ -77,7 +93,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-            <SidebarGroup>
+            {staff && <SidebarGroup>
               <SidebarGroupLabel className="text-sidebar-foreground/50">کلاس‌ها</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -93,7 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   ))}
                 </SidebarMenu>
               </SidebarGroupContent>
-            </SidebarGroup>
+            </SidebarGroup>}
           </SidebarContent>
           <SidebarFooter>
             <div className="flex items-center gap-2 rounded-lg p-2 group-data-[collapsible=icon]:hidden">
@@ -102,7 +118,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-sidebar-accent-foreground">{me?.fullName}</p>
-                <p className="text-xs text-sidebar-foreground/60">{me?.isAdmin ? "مدیر" : "معلم"}</p>
+                <p className="text-xs text-sidebar-foreground/60">{me?.role ? roleLabel[me.role] : ""}</p>
               </div>
             </div>
             <SidebarMenu>
@@ -110,8 +126,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <SidebarMenuButton
                   tooltip="خروج"
                   onClick={async () => {
+                    await qc.cancelQueries();
+                    qc.clear();
                     await supabase.auth.signOut();
-                    navigate({ to: "/auth" });
+                    navigate({ to: "/auth", replace: true });
                   }}
                 >
                   <LogOut />
@@ -125,7 +143,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="print:hidden sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur sm:px-6">
             <SidebarTrigger />
-            <form
+            {staff && <form
               className="relative max-w-md flex-1"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -139,7 +157,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 placeholder="جستجوی دانش‌آموز (نام یا شماره)…"
                 className="h-10 rounded-full bg-card pr-9"
               />
-            </form>
+            </form>}
           </header>
           <main key={path} className="animate-page flex-1 px-4 py-6 sm:px-6 lg:px-8 print:p-0">{children}</main>
         </div>

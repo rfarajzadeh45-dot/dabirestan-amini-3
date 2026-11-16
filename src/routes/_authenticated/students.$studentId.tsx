@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowRight, Pencil, Plus, Trash2, Award, CalendarX, Clock, CheckCircle2, Printer } from "lucide-react";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar, BarChart } from "recharts";
+import { SubjectAveragesList, SubjectProgressChart } from "@/components/subject-charts";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
@@ -94,15 +94,6 @@ function StudentProfile() {
     [subjects, grades],
   );
 
-  const progress = useMemo(() => {
-    const dates = [...new Set(grades?.map((g) => g.date) ?? [])].sort();
-    return dates.map((d) => {
-      const upto = grades!.filter((g) => g.date <= d).map((g) => g.score);
-      const day = grades!.filter((g) => g.date === d).map((g) => g.score);
-      return { date: jalali(d), "میانگین روز": Number(average(day)!.toFixed(2)), "معدل تجمعی": Number(average(upto)!.toFixed(2)) };
-    });
-  }, [grades]);
-
   if (isLoading) return <p className="text-muted-foreground">در حال بارگذاری…</p>;
   if (!s) return <p className="text-muted-foreground">دانش‌آموز یافت نشد یا به آن دسترسی ندارید.</p>;
 
@@ -154,37 +145,14 @@ function StudentProfile() {
         </TabsList>
 
         <TabsContent value="grades" className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <section className="rounded-2xl border bg-card p-5 shadow-card">
-              <h2 className="mb-4 font-semibold">نمودار پیشرفت</h2>
-              <div className="h-64" dir="ltr">
-                <ResponsiveContainer>
-                  <LineChart data={progress}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="date" reversed tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
-                    <YAxis orientation="right" domain={[0, 20]} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "Vazirmatn" }} />
-                    <Line type="monotone" dataKey="میانگین روز" stroke="var(--chart-2)" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="معدل تجمعی" stroke="var(--chart-1)" strokeWidth={3} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
-            <section className="rounded-2xl border bg-card p-5 shadow-card">
-              <h2 className="mb-4 font-semibold">میانگین هر درس</h2>
-              <div className="h-64" dir="ltr">
-                <ResponsiveContainer>
-                  <BarChart data={bySubject.map((b) => ({ name: b.name, میانگین: b.avg ? Number(b.avg.toFixed(2)) : 0 }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                    <XAxis dataKey="name" reversed tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
-                    <YAxis orientation="right" domain={[0, 20]} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <Tooltip contentStyle={{ borderRadius: 12, direction: "rtl", fontFamily: "Vazirmatn" }} />
-                    <Bar dataKey="میانگین" fill="var(--chart-1)" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
-          </div>
+          <section className="rounded-2xl border bg-card p-5 shadow-card">
+            <h2 className="mb-4 font-semibold">نمودار پیشرفت به تفکیک درس</h2>
+            <SubjectProgressChart subjects={subjects ?? []} grades={grades ?? []} />
+          </section>
+          <section className="rounded-2xl border bg-card p-5 shadow-card">
+            <h2 className="mb-4 font-semibold">میانگین همه دروس</h2>
+            <SubjectAveragesList subjects={subjects ?? []} grades={grades ?? []} />
+          </section>
           <GradesTable studentId={studentId} grades={grades ?? []} subjects={subjects ?? []} subName={subName} bySubject={bySubject} />
         </TabsContent>
 

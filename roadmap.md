@@ -7,3 +7,8 @@
 - [x] Per-class Top 10 leaderboards (academic, attendance, most improved).
 - [x] Bundle the six official Vazirmatn weights and replace Google font links with local font rules.
 - [x] Verify local font loading, production public-asset inclusion configuration, automatic build checks, and existing tests.
+
+- [x] Username-only login with four portals and role redirect
+- [x] Student and parent read-only dashboards with per-subject chart
+- [x] Admin account creation, password reset, parent-child links
+- [x] Subject averages list that never clips

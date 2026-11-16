@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useMe } from "@/lib/auth";
+import { AccountsAdmin } from "@/components/accounts-admin";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -32,7 +33,7 @@ function SettingsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader title="تنظیمات" subtitle="مدیریت کاربران، دسترسی کلاس‌ها و دروس" />
-      <UsersSection myId={me?.id} />
+      <AccountsAdmin myId={me?.id} />
       <div className="grid gap-6 lg:grid-cols-2">
         <ClassesSection />
         <SubjectsSection />
@@ -51,84 +52,6 @@ function useClasses() {
       return data;
     },
   });
-}
-
-function UsersSection({ myId }: { myId?: string | undefined }) {
-  const qc = useQueryClient();
-  const { data: classes } = useClasses();
-  const { data } = useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async () => {
-      const [p, r, t] = await Promise.all([
-        supabase.from("profiles").select("id,full_name,email").order("created_at"),
-        supabase.from("user_roles").select("user_id,role"),
-        supabase.from("teacher_classes").select("user_id,class_id"),
-      ]);
-      if (p.error) throw p.error;
-      return { profiles: p.data, roles: r.data ?? [], tc: t.data ?? [] };
-    },
-  });
-
-  const toggleAdmin = useMutation({
-    mutationFn: async ({ id, on }: { id: string; on: boolean }) => {
-      const { error } = on
-        ? await supabase.from("user_roles").insert({ user_id: id, role: "admin" })
-        : await supabase.from("user_roles").delete().eq("user_id", id).eq("role", "admin");
-      if (error) throw error;
-    },
-    onSuccess: () => { toast.success("نقش کاربر به‌روزرسانی شد"); qc.invalidateQueries({ queryKey: ["admin-users"] }); },
-    onError: (e: Error) => toast.error(e.message),
-  });
-  const toggleClass = useMutation({
-    mutationFn: async ({ uid, cid, on }: { uid: string; cid: string; on: boolean }) => {
-      const { error } = on
-        ? await supabase.from("teacher_classes").insert({ user_id: uid, class_id: cid })
-        : await supabase.from("teacher_classes").delete().eq("user_id", uid).eq("class_id", cid);
-      if (error) throw error;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-users"] }),
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  return (
-    <section className="rounded-2xl border bg-card p-5 shadow-card">
-      <h2 className="font-semibold">کاربران و دسترسی کلاس‌ها</h2>
-      <p className="mb-4 mt-1 text-sm text-muted-foreground">معلمان پس از ثبت‌نام اینجا نمایش داده می‌شوند. کلاس‌های هر معلم را مشخص کنید.</p>
-      <div className="space-y-3">
-        {data?.profiles.map((p) => {
-          const isAdmin = data.roles.some((r) => r.user_id === p.id && r.role === "admin");
-          return (
-            <div key={p.id} className="rounded-xl border p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <p className="font-medium">{p.full_name || "بدون نام"}</p>
-                  <p className="text-xs text-muted-foreground" dir="ltr">{p.email}</p>
-                </div>
-                <label className="flex items-center gap-2 text-sm">
-                  مدیر
-                  <Switch checked={isAdmin} disabled={p.id === myId} onCheckedChange={(on) => toggleAdmin.mutate({ id: p.id, on })} />
-                </label>
-              </div>
-              {!isAdmin && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {classes?.map((c) => {
-                    const on = data.tc.some((t) => t.user_id === p.id && t.class_id === c.id);
-                    return (
-                      <label key={c.id} className="flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted">
-                        <Checkbox checked={on} onCheckedChange={(v) => toggleClass.mutate({ uid: p.id, cid: c.id, on: !!v })} />
-                        {c.name}
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-              {isAdmin && <p className="mt-2 text-xs text-muted-foreground">مدیر به همه کلاس‌ها دسترسی دارد.</p>}
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
 }
 
 function ClassesSection() {
