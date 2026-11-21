@@ -9,18 +9,19 @@ import { PageHeader } from "@/components/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 import { fa, faNum, fullName, shiftDate } from "@/lib/fa";
 import { schoolTime } from "@/lib/attendance-time";
-import { academicRanking, attendanceRanking, improvementRanking, type RAttendance, type RGrade, type RStudent } from "@/lib/rankings";
+import { academicRanking, attendanceRanking, improvementRanking, classRankings, type RAttendance, type RGrade, type ClassStudent } from "@/lib/rankings";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/rankings")({
   head: () => ({
     meta: [
-      { title: "رتبه‌بندی دانش‌آموزان | سامانه مدیریت مدرسه" },
-      { name: "description", content: "ده دانش‌آموز برتر هر کلاس در درس، حضور و پیشرفت" },
-      { property: "og:title", content: "رتبه‌بندی دانش‌آموزان | سامانه مدیریت مدرسه" },
-      { property: "og:description", content: "ده دانش‌آموز برتر هر کلاس در درس، حضور و پیشرفت" },
+      { title: "رتبه‌بندی دانش‌آموزان و کلاس‌ها | سامانه مدیریت مدرسه" },
+      { name: "description", content: "برترین دانش‌آموزان و مقایسه معدل و حضور کلاس‌های مدرسه" },
+      { property: "og:title", content: "رتبه‌بندی دانش‌آموزان و کلاس‌ها | سامانه مدیریت مدرسه" },
+      { property: "og:description", content: "برترین دانش‌آموزان و مقایسه معدل و حضور کلاس‌های مدرسه" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -35,10 +36,11 @@ function Rankings() {
   const today = schoolTime(new Date()).date;
   const [range, setRange] = useState<Range>("month");
   const [classId, setClassId] = useState<string>("");
+  const [scope, setScope] = useState<"students" | "classes">("students");
   const start = range === "week" ? shiftDate(today, -6) : range === "month" ? shiftDate(today, -29) : null;
   const prevCut = start ?? shiftDate(today, -29);
 
-  const { data: classes } = useQuery({
+  const { data: classes, error: classesError, refetch: reloadClasses } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
       const { data, error } = await supabase.from("classes").select("id,name,sort_order").order("sort_order");
@@ -49,22 +51,30 @@ function Rankings() {
   useEffect(() => { if (!classId && classes?.[0]) setClassId(classes[0].id); }, [classes, classId]);
   const cls = classes?.find((c) => c.id === classId);
 
-  const { data } = useQuery({
-    queryKey: ["rankings", classId],
-    enabled: !!classId,
+  const { data, error, refetch } = useQuery({
+    queryKey: ["rankings", scope, scope === "classes" ? "all-accessible" : classId, start, today],
+    enabled: scope === "classes" ? !!classes?.length : !!classId,
     refetchInterval: 60_000,
     queryFn: async () => {
-      const s = await supabase.from("students").select("id,first_name,last_name,student_code").eq("class_id", classId);
+      const s = await fetchAll((f, t) => {
+        const query = supabase.from("students").select("id,first_name,last_name,student_code,class_id").order("id").range(f, t);
+        return scope === "classes" ? query : query.eq("class_id", classId);
+      });
       if (s.error) throw s.error;
       const ids = (s.data ?? []).map((x) => x.id);
-      const since = shiftDate(today, -120);
       const [g, a] = ids.length ? await Promise.all([
-        fetchAll((f, t) => supabase.from("grades").select("id,student_id,score,date").in("student_id", ids).order("id").range(f, t)),
-        fetchAll((f, t) => supabase.from("attendance").select("id,student_id,date,status").in("student_id", ids).gte("date", since).order("id").range(f, t)),
+        fetchAll((f, t) => {
+          const query = supabase.from("grades").select("id,student_id,score,date").in("student_id", ids).lte("date", today).order("id").range(f, t);
+          return scope === "classes" && start ? query.gte("date", start) : query;
+        }),
+        fetchAll((f, t) => {
+          const query = supabase.from("attendance").select("id,student_id,date,status").in("student_id", ids).lte("date", today).order("id").range(f, t);
+          return start ? query.gte("date", start) : query;
+        }),
       ]) : [{ data: [], error: null }, { data: [], error: null }];
       for (const r of [g, a]) if (r.error) throw r.error;
       return {
-        students: (s.data ?? []) as RStudent[],
+        students: (s.data ?? []) as ClassStudent[],
         grades: (g.data ?? []).map((x) => ({ student_id: x.student_id, score: Number(x.score), date: x.date })) as RGrade[],
         attendance: (a.data ?? []).map((x) => ({ student_id: x.student_id, date: x.date, status: x.status })) as RAttendance[],
       };
@@ -82,23 +92,33 @@ function Rankings() {
       academic: academic.map((r) => ({ ...r, prev: prevMap.get(r.student.id) })),
       attendance: attendanceRanking(data.students, inRange(data.attendance)),
       improved: improvementRanking(data.students, grades),
+      classes: classRankings(classes ?? [], data.students, grades, inRange(data.attendance)),
     };
-  }, [data, start, today, prevCut]);
+  }, [data, classes, start, today, prevCut]);
 
   return (
     <div className="mx-auto max-w-6xl">
-      <PageHeader title="رتبه‌بندی دانش‌آموزان" subtitle="ده نفر برتر هر کلاس، جداگانه برای هر کلاس محاسبه می‌شود" />
+      <PageHeader title="رتبه‌بندی دانش‌آموزان" />
+      <ToggleGroup className="mb-4 justify-start" type="single" value={scope} onValueChange={(v) => { if (v === "students" || v === "classes") setScope(v); }} variant="outline" aria-label="نوع رتبه‌بندی">
+        <ToggleGroupItem value="students">دانش‌آموزان</ToggleGroupItem>
+        <ToggleGroupItem value="classes">مقایسه کلاس‌ها</ToggleGroupItem>
+      </ToggleGroup>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Select value={classId} onValueChange={setClassId}>
+        {scope === "students" && <Select value={classId} onValueChange={setClassId}>
           <SelectTrigger className="w-44" aria-label="انتخاب کلاس"><SelectValue placeholder="انتخاب کلاس" /></SelectTrigger>
           <SelectContent>{classes?.map((c) => <SelectItem key={c.id} value={c.id}>کلاس {c.name}</SelectItem>)}</SelectContent>
-        </Select>
+        </Select>}
         <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as Range)} variant="outline">
           {(Object.keys(rangeLabel) as Range[]).map((r) => <ToggleGroupItem key={r} value={r}>{rangeLabel[r]}</ToggleGroupItem>)}
         </ToggleGroup>
       </div>
 
-      <Tabs defaultValue="academic" dir="rtl">
+      {error || classesError ? <div role="alert" className="flex flex-wrap items-center gap-3 py-6 text-sm text-destructive">
+        دریافت رتبه‌بندی ناموفق بود.
+        <Button variant="outline" onClick={() => { void refetch(); void reloadClasses(); }}>تلاش دوباره</Button>
+      </div> : classes?.length === 0 ? <p className="py-6 text-sm text-muted-foreground">کلاسی برای حساب شما در دسترس نیست.</p> : scope === "classes" ? (
+        <ClassComparison rows={result?.classes} />
+      ) : <Tabs defaultValue="academic" dir="rtl">
         <TabsList className="mb-4 flex-wrap h-auto">
           <TabsTrigger value="academic">برترین‌های درسی</TabsTrigger>
           <TabsTrigger value="attendance">برترین‌های حضور</TabsTrigger>
@@ -151,9 +171,32 @@ function Rankings() {
             }))}
           />
         </TabsContent>
-      </Tabs>
+      </Tabs>}
     </div>
   );
+}
+
+function ClassComparison({ rows }: { rows: ReturnType<typeof classRankings> | undefined }) {
+  if (!rows) return <p role="status" className="py-6 text-sm text-muted-foreground">در حال بارگذاری…</p>;
+  return <section aria-label="مقایسه رتبه کلاس‌ها" className="space-y-3">
+    <h2 className="font-semibold">رتبه کلاس‌ها</h2>
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[650px] text-right text-sm">
+        <thead className="border-b bg-muted text-muted-foreground">
+          <tr><th className="p-3">رتبه درسی</th><th className="p-3">کلاس</th><th className="p-3">معدل دانش‌آموزان</th><th className="p-3">دارای نمره / کل</th><th className="p-3">رتبه حضور</th><th className="p-3">حضور</th><th className="p-3">روز ثبت‌شده</th></tr>
+        </thead>
+        <tbody>{rows.map((r) => <tr key={r.cls.id} className="border-b last:border-0">
+          <td className="p-3 font-bold">{r.rank === null ? "—" : fa(r.rank)}</td>
+          <td className="p-3 font-medium"><Link to="/classes/$classId" params={{ classId: r.cls.id }} className="text-primary hover:underline">{r.cls.name}</Link></td>
+          <td className="p-3 font-semibold tabular-nums">{r.avg === null ? "—" : faNum(r.avg, 2)}</td>
+          <td className="p-3 tabular-nums">{fa(r.gradedCount)} / {fa(r.studentCount)}</td>
+          <td className="p-3 font-bold">{r.attendanceRank === null ? "—" : fa(r.attendanceRank)}</td>
+          <td className="p-3 tabular-nums">{r.attendancePct === null ? "—" : `${faNum(r.attendancePct, 1)}٪`}</td>
+          <td className="p-3 tabular-nums">{fa(r.days)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </section>;
 }
 
 function Trend({ v, digits = 0 }: { v: number; digits?: number }) {

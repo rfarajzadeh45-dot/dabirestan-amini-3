@@ -12,3 +12,16 @@
 - [x] Student and parent read-only dashboards with per-subject chart
 - [x] Admin account creation, password reset, parent-child links
 - [x] Subject averages list that never clips
+
+- [ ] Add and verify comparisons between existing classes without changing school records.
+- [x] Confirm virtual-school deployment target: Tehran VPS; do not change Lovable-hosted school data.
+- [ ] Prepare safe VPS installation instructions and backup-first schema update for virtual school.
+- [ ] Virtual-school navigation and role-specific dashboards, reusing existing class/student accounts.
+- [ ] Online sessions and weekly schedule, conflict prevention, separate online attendance.
+- [ ] Assignments, private attachments, submissions, feedback and nonduplicate grade links.
+- [ ] Recorded lessons, resources, viewing progress and low-bandwidth access.
+- [ ] Private/class-public moderated questions and answers.
+- [ ] Exams, protected answer keys, timed autosaving attempts and grading.
+- [ ] Real meeting-provider links and explicit external-service configuration.
+- [ ] Notifications, parent/student progress and administrator activation controls.
+- [ ] Verify all four roles, permissions, persistence, regression and mobile RTL workflows.

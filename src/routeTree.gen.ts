@@ -18,10 +18,14 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedMyReportRouteImport } from './routes/_authenticated/my-report'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedVirtualRouteImport } from './routes/_authenticated/virtual'
 import { Route as AuthenticatedClassesIndexRouteImport } from './routes/_authenticated/classes.index'
 import { Route as AuthenticatedClassesClassIdRouteImport } from './routes/_authenticated/classes.$classId'
 import { Route as AuthenticatedStudentsIndexRouteImport } from './routes/_authenticated/students.index'
 import { Route as AuthenticatedStudentsStudentIdRouteImport } from './routes/_authenticated/students.$studentId'
+import { Route as AuthenticatedVirtualIndexRouteImport } from './routes/_authenticated/virtual.index'
+import { Route as AuthenticatedVirtualSectionRouteImport } from './routes/_authenticated/virtual.$section'
+import { Route as AuthenticatedVirtualSectionActivityIdRouteImport } from './routes/_authenticated/virtual.$section_.$activityId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,6 +71,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVirtualRoute = AuthenticatedVirtualRouteImport.update({
+  id: '/virtual',
+  path: '/virtual',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedClassesIndexRoute =
   AuthenticatedClassesIndexRouteImport.update({
     id: '/classes/',
@@ -91,6 +100,24 @@ const AuthenticatedStudentsStudentIdRoute =
     path: '/students/$studentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVirtualIndexRoute =
+  AuthenticatedVirtualIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedVirtualRoute,
+  } as any)
+const AuthenticatedVirtualSectionRoute =
+  AuthenticatedVirtualSectionRouteImport.update({
+    id: '/$section',
+    path: '/$section',
+    getParentRoute: () => AuthenticatedVirtualRoute,
+  } as any)
+const AuthenticatedVirtualSectionActivityIdRoute =
+  AuthenticatedVirtualSectionActivityIdRouteImport.update({
+    id: '/$section_/$activityId',
+    path: '/$section/$activityId',
+    getParentRoute: () => AuthenticatedVirtualRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,10 +128,14 @@ export interface FileRoutesByFullPath {
   '/my-report': typeof AuthenticatedMyReportRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/virtual': typeof AuthenticatedVirtualRouteWithChildren
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
+  '/virtual/$section': typeof AuthenticatedVirtualSectionRoute
   '/classes/': typeof AuthenticatedClassesIndexRoute
   '/students/': typeof AuthenticatedStudentsIndexRoute
+  '/virtual/': typeof AuthenticatedVirtualIndexRoute
+  '/virtual/$section/$activityId': typeof AuthenticatedVirtualSectionActivityIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,8 +148,11 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
+  '/virtual/$section': typeof AuthenticatedVirtualSectionRoute
   '/classes': typeof AuthenticatedClassesIndexRoute
   '/students': typeof AuthenticatedStudentsIndexRoute
+  '/virtual': typeof AuthenticatedVirtualIndexRoute
+  '/virtual/$section/$activityId': typeof AuthenticatedVirtualSectionActivityIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,10 +165,14 @@ export interface FileRoutesById {
   '/_authenticated/my-report': typeof AuthenticatedMyReportRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/virtual': typeof AuthenticatedVirtualRouteWithChildren
   '/_authenticated/classes/$classId': typeof AuthenticatedClassesClassIdRoute
   '/_authenticated/students/$studentId': typeof AuthenticatedStudentsStudentIdRoute
+  '/_authenticated/virtual/$section': typeof AuthenticatedVirtualSectionRoute
   '/_authenticated/classes/': typeof AuthenticatedClassesIndexRoute
   '/_authenticated/students/': typeof AuthenticatedStudentsIndexRoute
+  '/_authenticated/virtual/': typeof AuthenticatedVirtualIndexRoute
+  '/_authenticated/virtual/$section_/$activityId': typeof AuthenticatedVirtualSectionActivityIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,10 +185,14 @@ export interface FileRouteTypes {
     | '/my-report'
     | '/rankings'
     | '/settings'
+    | '/virtual'
     | '/classes/$classId'
     | '/students/$studentId'
+    | '/virtual/$section'
     | '/classes/'
     | '/students/'
+    | '/virtual/'
+    | '/virtual/$section/$activityId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -163,8 +205,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/classes/$classId'
     | '/students/$studentId'
+    | '/virtual/$section'
     | '/classes'
     | '/students'
+    | '/virtual'
+    | '/virtual/$section/$activityId'
   id:
     | '__root__'
     | '/'
@@ -176,10 +221,14 @@ export interface FileRouteTypes {
     | '/_authenticated/my-report'
     | '/_authenticated/rankings'
     | '/_authenticated/settings'
+    | '/_authenticated/virtual'
     | '/_authenticated/classes/$classId'
     | '/_authenticated/students/$studentId'
+    | '/_authenticated/virtual/$section'
     | '/_authenticated/classes/'
     | '/_authenticated/students/'
+    | '/_authenticated/virtual/'
+    | '/_authenticated/virtual/$section_/$activityId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -254,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/virtual': {
+      id: '/_authenticated/virtual'
+      path: '/virtual'
+      fullPath: '/virtual'
+      preLoaderRoute: typeof AuthenticatedVirtualRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/classes/': {
       id: '/_authenticated/classes/'
       path: '/classes'
@@ -282,8 +338,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsStudentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/virtual/': {
+      id: '/_authenticated/virtual/'
+      path: '/'
+      fullPath: '/virtual/'
+      preLoaderRoute: typeof AuthenticatedVirtualIndexRouteImport
+      parentRoute: typeof AuthenticatedVirtualRoute
+    }
+    '/_authenticated/virtual/$section': {
+      id: '/_authenticated/virtual/$section'
+      path: '/$section'
+      fullPath: '/virtual/$section'
+      preLoaderRoute: typeof AuthenticatedVirtualSectionRouteImport
+      parentRoute: typeof AuthenticatedVirtualRoute
+    }
+    '/_authenticated/virtual/$section_/$activityId': {
+      id: '/_authenticated/virtual/$section_/$activityId'
+      path: '/$section/$activityId'
+      fullPath: '/virtual/$section/$activityId'
+      preLoaderRoute: typeof AuthenticatedVirtualSectionActivityIdRouteImport
+      parentRoute: typeof AuthenticatedVirtualRoute
+    }
   }
 }
+
+interface AuthenticatedVirtualRouteChildren {
+  AuthenticatedVirtualSectionRoute: typeof AuthenticatedVirtualSectionRoute
+  AuthenticatedVirtualIndexRoute: typeof AuthenticatedVirtualIndexRoute
+  AuthenticatedVirtualSectionActivityIdRoute: typeof AuthenticatedVirtualSectionActivityIdRoute
+}
+
+const AuthenticatedVirtualRouteChildren: AuthenticatedVirtualRouteChildren = {
+  AuthenticatedVirtualSectionRoute: AuthenticatedVirtualSectionRoute,
+  AuthenticatedVirtualIndexRoute: AuthenticatedVirtualIndexRoute,
+  AuthenticatedVirtualSectionActivityIdRoute:
+    AuthenticatedVirtualSectionActivityIdRoute,
+}
+
+const AuthenticatedVirtualRouteWithChildren =
+  AuthenticatedVirtualRoute._addFileChildren(AuthenticatedVirtualRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChildrenRoute: typeof AuthenticatedChildrenRoute
@@ -291,6 +384,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMyReportRoute: typeof AuthenticatedMyReportRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedVirtualRoute: typeof AuthenticatedVirtualRouteWithChildren
   AuthenticatedClassesClassIdRoute: typeof AuthenticatedClassesClassIdRoute
   AuthenticatedStudentsStudentIdRoute: typeof AuthenticatedStudentsStudentIdRoute
   AuthenticatedClassesIndexRoute: typeof AuthenticatedClassesIndexRoute
@@ -303,6 +397,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMyReportRoute: AuthenticatedMyReportRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedVirtualRoute: AuthenticatedVirtualRouteWithChildren,
   AuthenticatedClassesClassIdRoute: AuthenticatedClassesClassIdRoute,
   AuthenticatedStudentsStudentIdRoute: AuthenticatedStudentsStudentIdRoute,
   AuthenticatedClassesIndexRoute: AuthenticatedClassesIndexRoute,

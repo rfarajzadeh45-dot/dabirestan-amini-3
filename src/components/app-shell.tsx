@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search, Trophy, BookOpen, Heart } from "lucide-react";
+import { LayoutDashboard, School, Users, Settings, LogOut, GraduationCap, Search, Trophy, BookOpen, Heart, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { homeForRole, roleLabel } from "@/lib/username";
@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!me || staff) return;
     const home = homeForRole(me.role);
-    if (!path.startsWith(home)) navigate({ to: home, replace: true });
+    if (!path.startsWith(home) && path !== "/virtual" && !path.startsWith("/virtual/")) navigate({ to: home, replace: true });
   }, [me, staff, path, navigate]);
   const { data: classes } = useQuery({
     queryKey: ["classes"],
@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     },
   });
 
-  type NavItem = { title: string; url: "/dashboard" | "/classes" | "/students" | "/rankings" | "/settings" | "/my-report" | "/children"; icon: typeof BookOpen };
+  type NavItem = { title: string; url: "/dashboard" | "/classes" | "/students" | "/rankings" | "/settings" | "/my-report" | "/children" | "/virtual"; icon: typeof BookOpen };
   const main: NavItem[] = me?.role === "student"
     ? [{ title: "کارنامه من", url: "/my-report", icon: BookOpen }]
     : me?.role === "parent"
@@ -90,6 +90,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={path.startsWith("/virtual")} tooltip="مدرسه مجازی">
+                      <Link to="/virtual"><Video /><span>مدرسه مجازی</span></Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
