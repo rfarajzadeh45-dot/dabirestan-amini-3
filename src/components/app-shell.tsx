@@ -62,7 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="flex h-screen w-full overflow-hidden">
         <Sidebar side="right" collapsible="icon" className="print:hidden">
           <SidebarHeader className="px-3 py-4">
             <div className="flex items-center gap-2.5 overflow-hidden">
@@ -140,7 +140,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
           <header className="print:hidden sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur sm:px-6">
             <SidebarTrigger />
             {staff && <form
@@ -159,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               />
             </form>}
           </header>
-          <main key={path} className="animate-page flex-1 px-4 py-6 sm:px-6 lg:px-8 print:p-0">{children}</main>
+          <main key={path} className="animate-page flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 print:p-0">{children}</main>
         </div>
       </div>
     </SidebarProvider>
